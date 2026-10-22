@@ -1,121 +1,184 @@
-# Rankyx — Multi-Agent AI Product Research & Price Comparison
+# 🔎 Rankyx — Multi-Agent AI Product Research & Price Comparison
 
-\<p align="center">
-&#x20; \<strong>Automating product discovery, data extraction, and price comparison with AI agents.\</strong>
-\</p>
+**A multi-agent AI system that finds, scrapes, compares, and reports on products across online stores, so you can buy at the best value-for-money price.**
 
-\<p align="center">
-&#x20; \<img src="[https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white](https://img.shields.io/badge/Python-3776AB?style=flat-square\&logo=python\&logoColor=white)" alt="Python"/>
-&#x20; \<img src="[https://img.shields.io/badge/CrewAI-Multi--Agent_AI-6C47FF?style=flat-square](https://img.shields.io/badge/CrewAI-Multi--Agent_AI-6C47FF?style=flat-square)" alt="CrewAI"/>
-&#x20; \<img src="[https://img.shields.io/badge/Groq-LLM_Integration-F55036?style=flat-square](https://img.shields.io/badge/Groq-LLM_Integration-F55036?style=flat-square)" alt="Groq"/>
-&#x20; \<img src="[https://img.shields.io/badge/Pydantic-Data_Validation-E92063?style=flat-square&logo=pydantic&logoColor=white](https://img.shields.io/badge/Pydantic-Data_Validation-E92063?style=flat-square\&logo=pydantic\&logoColor=white)" alt="Pydantic"/>
-&#x20; \<img src="[https://img.shields.io/badge/Status-In_Development-orange?style=flat-square](https://img.shields.io/badge/Status-In_Development-orange?style=flat-square)" alt="In Development"/>
-\</p>
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![CrewAI](https://img.shields.io/badge/Framework-CrewAI-orange)
+![LLM](https://img.shields.io/badge/LLM-gpt--oss--120b%20(Groq)-green)
+![Status](https://img.shields.io/badge/Status-Moving%20to%20Production-yellow)
 
 ---
 
-## Overview
+## 📌 Overview
 
-Rankyx is a multi-agent AI system designed to automate e-commerce product research. It searches for products across online stores, extracts available product information, and generates an HTML report to support value-for-money purchasing decisions.
+Rankyx automates product price research. You give it a product name, a list of stores, and a target country. Four specialized AI agents then work in sequence to:
 
-Instead of manually searching websites and comparing listings, users provide product requirements and let specialized AI agents handle the research workflow.
+1. Generate smart search queries
+2. Search the web for product pages
+3. Extract structured product data (price, discount, specs)
+4. Produce a professional HTML comparison report
 
-### Key Features
+No more opening 20 tabs to compare prices.
 
-- **Intelligent query generation:** Creates diverse, targeted search queries.
-- **Automated web search:** Discovers potentially relevant product listings using Tavily.
-- **AI-powered data extraction:** Extracts product details from e-commerce pages using ScrapeGraphAI.
-- **Structured output validation:** Uses Pydantic models to define expected data structures.
-- **Product price comparison:** Collects prices, discounts, and specifications when available.
-- **Automated reporting:** Generates a standalone HTML comparison report.
-- **Agent observability:** Integrates AgentOps to monitor agent executions.
+---
 
-## System Architecture
+## ✨ Key Features
 
-Rankyx uses CrewAI to orchestrate four specialized agents in a sequential workflow.
+- **Multi-agent pipeline** built with [CrewAI](https://docs.crewai.com/) (sequential process)
+- **Structured outputs** validated with Pydantic at every stage
+- **Country-aware search** (only stores that sell in your target country)
+- **Confidence filtering** with a configurable score threshold
+- **Smart ranking** of the top N products with recommendation notes
+- **Standalone HTML report** styled with Bootstrap, ready to open or share
+- **Observability** with [AgentOps](https://www.agentops.ai/) for tracing agent runs
+- **Intermediate outputs saved** to `agent-output/` for easy debugging
 
-```mermaid
-flowchart TB
-    U(["Product Requirements"])
-    A["Search Recommendation Agent"]
-    B["Search Engine Agent"]
-    C["Scraping Agent"]
-    D["Report Generation Agent"]
-    O[("JSON Results")]
-    R["HTML Comparison Report"]
+---
 
-    U --> A
-    A -->|"Search queries"| B
-    B -->|"Candidate URLs"| C
-    C -->|"Structured product data"| O
-    O --> D
-    D --> R
+## 🧭 Workflow
 
-    style U fill:#1D4ED8,color:#FFFFFF,stroke:#1D4ED8
-    style A fill:#EDE9FE,color:#312E81,stroke:#8B5CF6
-    style B fill:#DBEAFE,color:#1E3A8A,stroke:#60A5FA
-    style C fill:#D1FAE5,color:#065F46,stroke:#34D399
-    style D fill:#FEF3C7,color:#92400E,stroke:#F59E0B
-    style O fill:#F3F4F6,color:#111827,stroke:#9CA3AF
-    style R fill:#DCFCE7,color:#166534,stroke:#22C55E
-```
-
-### Agent Responsibilities
-
-| Agent                 | Responsibility                       | Main Tools              |
-| --------------------- | ------------------------------------ | ----------------------- |
-| Search Recommendation | Generates relevant search queries    | CrewAI, Groq, Pydantic  |
-| Search Engine         | Retrieves candidate product listings | Tavily API              |
-| Scraping              | Extracts product details from pages  | ScrapeGraphAI, Pydantic |
-| Report Generation     | Produces the final HTML report       | CrewAI, Groq, HTML, CSS |
-
-## Workflow
+### High-level pipeline
 
 ```mermaid
 flowchart LR
-    A["1. Input"] --> B["2. Generate Queries"]
-    B --> C["3. Search Stores"]
-    C --> D["4. Extract Details"]
-    D --> E["5. Generate Report"]
+    A([👤 User Input]) --> B[🧠 Agent 1<br/>Search Recommendation]
+    B -->|search_queries.json| C[🔍 Agent 2<br/>Search Engine]
+    C -->|search_engine_results.json| D[🕸️ Agent 3<br/>Scraping]
+    D -->|scraping_results.json| E[📊 Agent 4<br/>Report Generation]
+    E -->|product_report.html| F([📄 HTML Report])
 
-    style A fill:#EFF6FF,stroke:#60A5FA,color:#1E3A8A
-    style B fill:#EDE9FE,stroke:#8B5CF6,color:#312E81
-    style C fill:#DBEAFE,stroke:#3B82F6,color:#1E3A8A
-    style D fill:#D1FAE5,stroke:#10B981,color:#065F46
-    style E fill:#FEF3C7,stroke:#F59E0B,color:#92400E
+    T1[(Tavily API)] -.-> C
+    T2[(ScrapeGraphAI)] -.-> D
+    L[(Groq LLM)] -.-> B
+    L -.-> C
+    L -.-> D
+    L -.-> E
 ```
 
-1. **Input:** Specify the product, target country, preferred websites, and recommendation limit.
-2. **Query generation:** Generate targeted search queries for e-commerce listings.
-3. **Search:** Retrieve potentially relevant product pages.
-4. **Extraction:** Collect available product titles, prices, URLs, images, and specifications.
-5. **Reporting:** Generate an HTML report containing product comparisons and recommendations.
+### Detailed data flow
 
-## Technology Stack
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant A1 as Search Recommendation Agent
+    participant A2 as Search Engine Agent
+    participant TV as Tavily
+    participant A3 as Scraping Agent
+    participant SG as ScrapeGraphAI
+    participant A4 as Report Agent
 
-\<p align="center">
-&#x20; \<img src="[https://skillicons.dev/icons?i=python,git,github](https://skillicons.dev/icons?i=python,git,github)" alt="Python, Git and GitHub"/>
-\</p>
+    U->>A1: product, websites, country, language
+    A1-->>A2: up to 3 search queries
+    loop For each query
+        A2->>TV: search(query, max_results=3)
+        TV-->>A2: results with scores
+    end
+    A2-->>A3: filtered results (score >= threshold)
+    loop For each product URL
+        A3->>SG: extract(url, schema)
+        SG-->>A3: title, price, discount, specs
+    end
+    A3-->>A4: Top N ranked products
+    A4-->>U: Standalone HTML report
+```
 
-| Category                  | Technologies         |
-| ------------------------- | -------------------- |
-| Language                  | Python               |
-| Multi-agent orchestration | CrewAI               |
-| LLM inference             | Groq                 |
-| Web search                | Tavily               |
-| Web data extraction       | ScrapeGraphAI        |
-| Data validation           | Pydantic             |
-| Configuration             | python-dotenv        |
-| Observability             | AgentOps             |
-| Report presentation       | HTML, CSS, Bootstrap |
-| Output formats            | JSON, HTML           |
+### Agent responsibilities
 
-## Example
+| # | Agent | Input | Output | Tool |
+|---|-------|-------|--------|------|
+| 1 | **Search Recommendation Agent** | Product, stores, country, language | Up to 3 search queries | None (LLM only) |
+| 2 | **Search Engine Agent** | Search queries | Ranked search results | Tavily Search |
+| 3 | **Scraping Agent** | Product page URLs | Structured product data | ScrapeGraphAI |
+| 4 | **Report Generation Agent** | Extracted products | Full HTML report | None (LLM only) |
 
-The current workflow can be configured to research a product in a specific market.
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Agent framework | CrewAI |
+| LLM | `gpt-oss-120b` via Groq (OpenAI-compatible API) |
+| Web search | Tavily |
+| Web scraping | ScrapeGraphAI |
+| Data validation | Pydantic |
+| Monitoring | AgentOps |
+| Report styling | HTML, CSS, Bootstrap |
+
+---
+
+## 📁 Project Structure
+
+```text
+rankyx/
+├── main.py                  # Agents, tasks, and crew definition
+├── .env                     # API keys (never commit this)
+├── requirements.txt
+├── README.md
+└── agent-output/            # Auto-generated outputs
+    ├── search_queries.json
+    ├── search_engine_results.json
+    ├── scraping_results.json
+    └── product_report.html
+```
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/<your-username>/rankyx.git
+cd rankyx
+```
+
+### 2. Create a virtual environment
+
+```bash
+python -m venv venv
+source venv/bin/activate      # Windows: venv\Scripts\activate
+```
+
+### 3. Install dependencies
+
+```bash
+pip install crewai agentops tavily-python scrapegraph-py python-dotenv pydantic
+```
+
+### 4. Set up environment variables
+
+Create a `.env` file in the project root:
+
+```env
+GROQ_API_KEY=your_groq_key
+TAVILY_API_KEY=your_tavily_key
+SCRAPGRAPH_API_KEY=your_scrapegraph_key
+AGENTOPS_API_KEY=your_agentops_key
+```
+
+Get your keys here:
+- [Groq Console](https://console.groq.com/)
+- [Tavily](https://tavily.com/)
+- [ScrapeGraphAI](https://scrapegraphai.com/)
+- [AgentOps](https://www.agentops.ai/)
+
+### 5. Run the project
+
+```bash
+python main.py
+```
+
+Open `agent-output/product_report.html` in your browser to see the report.
+
+---
+
+## ⚙️ Configuration
+
+Edit the inputs at the bottom of `main.py`:
 
 ```python
-crew_results = crew.kickoff(
+crew.kickoff(
     inputs={
         "product_name": "iPhone 14",
         "websites_list": "Amazon, eBay, Walmart",
@@ -123,149 +186,80 @@ crew_results = crew.kickoff(
         "no_keywords": 3,
         "language": "English",
         "score_threshold": 0.5,
-        "top_recommendations_no": 5
+        "top_recommendations_no": 5,
     }
 )
 ```
 
-### Generated Artifacts
-
-| File                         | Purpose                  |
-| ---------------------------- | ------------------------ |
-| `search_queries.json`        | Generated search queries |
-| `search_engine_results.json` | Candidate search results |
-| `scraping_results.json`      | Extracted product data   |
-| `product_report.html`        | Final comparison report  |
-
-The results depend on search coverage, page accessibility, and the availability of product information. Product prices and availability should be verified against their source pages.
-
-## Project Structure
-
-```text
-Rankyx/
-├── app.py
-├── agent-output/
-│   ├── search_queries.json
-│   ├── search_engine_results.json
-│   ├── scraping_results.json
-│   └── product_report.html
-├── .env
-├── .gitignore
-├── requirements.txt
-└── README.md
-```
-
-This structure reflects the current script-based implementation.
-
-## Getting Started
-
-### Prerequisites
-
-- Python compatible with your installed dependencies
-- Groq API key
-- Tavily API key
-- ScrapeGraphAI API key
-- AgentOps API key
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/YOUR_USERNAME/Rankyx.git
-cd Rankyx
-```
-
-Replace `YOUR_USERNAME` with your GitHub username.
-
-### 2. Create and activate a virtual environment
-
-**Windows**
-
-```bash
-python -m venv .venv
-.venv\Scripts\activate
-```
-
-**Linux/macOS**
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-### 3. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-If `requirements.txt` does not exist, create and review one from your tested environment:
-
-```bash
-pip freeze > requirements.txt
-```
-
-### 4. Configure environment variables
-
-Create a `.env` file in the project root:
-
-```dotenv
-GROQ_API_KEY=your_groq_api_key
-TAVILY_API_KEY=your_tavily_api_key
-SCRAPGRAPH_API_KEY=your_scrapegraph_api_key
-AGENTOPS_API_KEY=your_agentops_api_key
-```
-
-**Security:** Never commit `.env` or expose API keys in logs or screenshots. Add `.env` to `.gitignore` and commit an `.env.example` with placeholders instead.
-
-### 5. Run the application
-
-```bash
-python app.py
-```
-
-The agents execute sequentially, and the generated artifacts are saved in `agent-output/`.
-
-## Current Limitations
-
-- Search results may include irrelevant or duplicate listings.
-- Some websites may block automated access or expose incomplete data.
-- Prices and discounts may be missing or use different currencies.
-- Search-score filtering and final recommendation ranking need deterministic enforcement in application code.
-- Results are stored locally rather than in a persistent database.
-- The workflow currently runs as a Python script rather than a deployed API.
-- Automated testing, background jobs, and CI/CD are not yet implemented.
-
-## Production Roadmap
-
-The next stage is to evolve Rankyx into a production-ready application.
-
-- [ ] Refactor the script into modular Python packages.
-- [ ] Add structured logging, configuration validation, and robust error handling.
-- [ ] Implement unit and integration tests using Pytest.
-- [ ] Build a FastAPI backend for comparison requests and report retrieval.
-- [ ] Add PostgreSQL and SQLAlchemy for persistent storage.
-- [ ] Containerize the application using Docker and Docker Compose.
-- [ ] Introduce Redis and Celery for long-running background jobs when needed.
-- [ ] Configure GitHub Actions for automated testing and code quality checks.
-- [ ] Improve tracing, monitoring, and error reporting.
-- [ ] Deploy to a cloud platform with durable report storage.
-
-These are planned enhancements, not features of the current implementation.
-
-## Future Vision
-
-Rankyx aims to become an e-commerce intelligence platform that combines multi-agent AI, automated research, structured product analysis, and production-grade backend engineering to help users make informed purchasing decisions.
-
-## Author
-
-**Sama Hassan**
-
-Computer Science Graduate | AI Engineering | Multi-Agent Systems | LLM Applications
-
-[LinkedIn](https://www.linkedin.com/in/sama-hassans/) · [GitHub](https://github.com/SamaHassa/Rankyx)
+| Parameter | Description |
+|-----------|-------------|
+| `product_name` | Product to research |
+| `websites_list` | Target stores, comma-separated |
+| `country_name` | Country where the product must be sold |
+| `no_keywords` | Max number of search queries |
+| `language` | Language of the search queries |
+| `score_threshold` | Minimum Tavily relevance score (0 to 1) |
+| `top_recommendations_no` | Number of top products in the final report |
 
 ---
 
-\<p align="center">
-&#x20; \<sub>Built with Python, CrewAI, Groq, Tavily, and ScrapeGraphAI.\</sub>
-\</p>
+## 📄 Example Output
+
+The final report includes:
+
+- Executive summary
+- Product comparison table
+- Key specifications
+- Price analysis
+- Advantages and disadvantages
+- Evidence-based recommendations
+- Data limitations and source links
+
+---
+
+## 🗺️ Roadmap (Production Plan)
+
+- [ ] REST API with FastAPI
+- [ ] Web frontend (Streamlit or Next.js)
+- [ ] PostgreSQL storage for results and price history
+- [ ] Redis caching and background job queue
+- [ ] Scheduled price tracking with alerts
+- [ ] Retry logic and robust scraping error handling
+- [ ] Dockerize and add CI/CD
+- [ ] Cost and token usage tracking
+- [ ] User authentication
+- [ ] Telegram / WhatsApp bot interface
+
+---
+
+## ⚠️ Limitations
+
+- Results depend on search quality and on how scrapable each store is.
+- Some sites block scrapers or load prices dynamically.
+- Prices change fast, so reports are a snapshot in time.
+- The agents are instructed never to invent missing data, and missing fields are flagged in the report.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome:
+
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feature/my-feature`)
+3. Commit your changes
+4. Open a Pull Request
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License. See `LICENSE` for details.
+
+---
+
+## 👤 Author
+
+**Sama Hassan**
+AI Engineer | Cairo, Egypt
+[GitHub](https://github.com/) · [LinkedIn](https://linkedin.com/)
