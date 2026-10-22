@@ -217,18 +217,17 @@ The final report includes:
 
 ---
 
-## 🗺️ Roadmap (Production Plan)
-
-- [ ] REST API with FastAPI
-- [ ] Web frontend (Streamlit or Next.js)
-- [ ] PostgreSQL storage for results and price history
-- [ ] Redis caching and background job queue
-- [ ] Scheduled price tracking with alerts
-- [ ] Retry logic and robust scraping error handling
-- [ ] Dockerize and add CI/CD
-- [ ] Cost and token usage tracking
-- [ ] User authentication
-- [ ] Telegram / WhatsApp bot interface
+Production Roadmap
+The next development stage focuses on transforming Rankyx into a production-ready application.
+- Code quality: Modular architecture, configuration validation, structured logging, and robust error handling.
+- Testing: Pytest unit and integration tests, including mocked external API calls.
+- API layer: FastAPI endpoints for creating comparisons, checking job status, and retrieving reports.
+- Persistence: PostgreSQL and SQLAlchemy for storing jobs, product data, and comparison results.
+- Containerization: Docker and Docker Compose for reproducible local development and deployment.
+- Background processing: Redis and Celery for long-running workflows and controlled retries.
+- CI/CD: GitHub Actions for automated tests, code quality checks, and image builds.
+- Observability: Improved tracing, error monitoring, health checks, and execution metrics.
+- Deployment: Cloud hosting and durable report storage.
 
 ---
 
@@ -262,4 +261,4 @@ This project is licensed under the MIT License. See `LICENSE` for details.
 
 **Sama Hassan**
 AI Engineer | Cairo, Egypt
-[GitHub](https://github.com/) · [LinkedIn](https://linkedin.com/)
+[GitHub]((https://github.com/SamaHassa/Rankyx)) · [LinkedIn]((https://www.linkedin.com/in/sama-hassans/))
