@@ -3,7 +3,10 @@ from agents.search_engine import search_engine_agent,search_engine_task
 from agents.scraping import scraping_agent,scraping_task
 from agents.report_generation import report_agent,report_task
 from crewai import Crew,Process
+import logging
 
+
+logger=logging.getLogger(__name__)
 
 def run_research(inputs):
 
@@ -13,10 +16,13 @@ def run_research(inputs):
         process=Process.sequential,
         verbose=True
     )
-
-    crew_results = crew.kickoff(
-        inputs=inputs
-    )
+    try:
+        crew_results = crew.kickoff(
+            inputs=inputs
+        )
+    except Exception :
+        logger.exception("An error occurred while running the research workflow.")
+        crew_results = "Sorry, we couldn't complete your product research. Please try again."
 
     return crew_results
 
